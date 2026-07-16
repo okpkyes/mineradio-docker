@@ -1,0 +1,12 @@
+# 依赖（构建时在镜像内 npm ci 安装，无需入库）
+node_modules/
+
+# 运行时数据卷（歌单/缓存/LX 脚本，落 NAS /data）
+data/
+.npmrc
+
+# 本地环境 / 日志
+.env
+*.log
+.DS_Store
+Thumbs.db

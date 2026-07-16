@@ -1,0 +1,50 @@
+# ====================================================================
+#  Mineradio-LX (lmh200609 base) docker-compose.yml — NAS 调校版
+#  保留你的环境调校：端口 8765、user 0:0、music 只读挂载、./data 卷、1G 内存限制
+#  浏览器访问：http://<NAS-IP>:8765
+# ====================================================================
+services:
+  mineradio:
+    build:
+      context: .
+    image: mineradio:latest
+    container_name: mineradio
+    user: "0:0"
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    environment:
+      - PORT=8765
+      - HOST=0.0.0.0
+      - MUSIC_ROOT=/music
+      # lmh 数据持久化（歌单 / 落雪音源脚本落盘到 /data，容器重建不丢）
+      - MINERADIO_USER_DATA_DIR=/data
+      - MINERADIO_LIBRARY_FILE=/data/mineradio-library.json
+      - MINERADIO_LX_SOURCE_DIR=/data/lx-sources
+      # 节奏图缓存 / 扫描上限（lmh 不强制读取，保留无害）
+      - MINERADIO_BEAT_CACHE_DIR=/data/cache/beatmaps
+      - MAX_SCAN_FILES=10000
+      # 在线音源 Cookie 持久化路径
+      - COOKIE_FILE=/data/netease-cookie
+      - QQ_COOKIE_FILE=/data/qq-cookie
+      # CORS 允许的 Origin（留空=允许所有来源；公网暴露建议设置）
+      - MINERADIO_CORS_ORIGIN=${MINERADIO_CORS_ORIGIN:-}
+    volumes:
+      # 音乐文件目录：左侧宿主机路径，右侧容器内 /music（只读）
+      - /vol1/1000/Pan/music:/music:ro
+      # 缓存数据目录
+      - ./data:/data
+    healthcheck:
+      # lmh 无 /api/health，探测首页
+      test: ["CMD", "curl", "-f", "http://localhost:8765/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # 资源限制（防止 DJ 分析或大规模扫描拖垮 NAS）
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
+          pids: 200
