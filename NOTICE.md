@@ -2,6 +2,14 @@
 
 Mineradio 使用了以下第三方项目或服务。各项目版权归其原作者所有。
 
+## 上游来源（派生自 / Derived from）
+
+本项目是基于以下仓库二次开发（Docker / NAS 化改造）而来的派生作品（GPL-3.0）。版权与署名归各自原作者所有；修改者仅在原许可框架内新增了 Docker/NAS 适配与 `/music` 自动扫描等能力。
+
+- **XxHuberrr/Mineradio** — Mineradio 主线
+- **rebindd/mineradio-web** — 网页化复刻参考
+- **lmh200609/Mineradio-LX-qs** — 本 Docker 版**实际派生的代码库**（纯 Node 服务 + Electron 桌面壳；仓库：https://github.com/lmh200609-commits/Mineradio-LX-qs）
+
 ## Third-party Libraries
 
 - Electron
