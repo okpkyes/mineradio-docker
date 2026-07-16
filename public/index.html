@@ -11,7 +11,12 @@
 <script src="vendor/gsap.min.js"></script>
 <script>
 try {
-  document.documentElement.classList.add(localStorage.getItem('mineradio-diy-player-mode-v1') === '1' ? 'diy-mode-preload' : 'simple-mode-preload');
+  (function(){
+    var __k = 'mineradio-diy-player-mode-v1';
+    var __v = localStorage.getItem(__k);
+    var __webDiy = (!window.desktopWindow && __v === null);
+    document.documentElement.classList.add((__v === '1' || __webDiy) ? 'diy-mode-preload' : 'simple-mode-preload');
+  })();
 } catch (e) {
   document.documentElement.classList.add('simple-mode-preload');
 }
@@ -2819,6 +2824,10 @@ var HOTKEY_ACTIONS = [
 var hotkeyCaptureState = null;
 var hotkeyGlobalStatus = {};
 var diyPlayerMode = readDiyModePreference();
+// 网页/Docker 部署：无 Electron 外壳，默认开启 DIY 视觉控制台
+if (!window.desktopWindow && localStorage.getItem('mineradio-diy-player-mode-v1') === null) {
+  diyPlayerMode = true;
+}
 var customCoverMap = readCustomCoverMap();
 var customLyricMap = readCustomLyricMap();
 var customLyricPrefs = readCustomLyricPrefs();
@@ -27272,7 +27281,15 @@ document.addEventListener('DOMContentLoaded', function(){
     return;
   }
   playMineradioIntroSound();
-  splashTimer = setTimeout(markSplashReadyToEnter, 5000);
+  if (!window.desktopWindow) {
+    // 网页/Docker 部署：无桌面外壳，自动跳过 Splash 点击进入
+    splashTimer = setTimeout(function(){
+      markSplashReadyToEnter();
+      setTimeout(dismissSplash, 350);
+    }, 1100);
+  } else {
+    splashTimer = setTimeout(markSplashReadyToEnter, 5000);
+  }
 });
 
 var desktopOverlayPushState = {
